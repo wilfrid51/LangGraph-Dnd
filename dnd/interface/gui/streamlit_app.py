@@ -6,8 +6,8 @@ sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
 from dnd.core.config import Settings
 from dnd.core.engine import AegisEngine
-from dnd.gui.components import render_character_card, render_turn_card, render_game_stats
-from dnd.gui.session_manager import get_available_sessions, create_new_game, load_game_session
+from dnd.interface.gui.components import render_character_card, render_turn_card, render_game_stats
+from dnd.interface.gui.session_manager import get_available_sessions, create_new_game, load_game_session
 
 st.set_page_config(page_title="LangGraph D&D", page_icon="🎲", layout="wide", initial_sidebar_state="collapsed")
 
