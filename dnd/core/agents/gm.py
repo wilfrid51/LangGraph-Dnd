@@ -3,8 +3,8 @@ from typing import Dict, Any, Optional, List
 from dnd.core.langchain import ChatOpenAI
 from dnd.core.langchain.core.prompts import ChatPromptTemplate
 
-from dnd.core.config import Config
-from dnd.core.models.state import GameState, Turn, Event, EventType
+from dnd.core.config import Config, Settings
+from dnd.core.models.state import GameState
 from dnd.core.models.rulings import Ruling, RulingOutcome, ReasoningTrace, ReasoningStep
 from dnd.core.models.characters import NPC, Character
 
@@ -17,21 +17,18 @@ class GameMaster:
     - Managing NPCs
     """
     
-    def __init__(self, llm: Optional[ChatOpenAI] = None, memory_manager: Optional[VaultManager] = None):
+    def __init__(self, llm: Optional[ChatOpenAI] = None):
         self.llm = llm or ChatOpenAI(model=Settings.GM_MODEL, temperature=0.7)
-        self.memory_manager = memory_manager or VaultManager()
     
     def narrate_scene(self, game_state: GameState, scene_description: str = None) -> str:
         """Narrate the current scene."""
-        context = self.memory_manager.get_relevant_context(game_state, game_state.current_turn)
-        
         prompt = ChatPromptTemplate.from_messages([
             ("system", self._get_gm_system_prompt()),
-            ("human", self._build_scene_prompt(context, scene_description))
+            ("human", f"Describe the current scene: {scene_description}")
         ])
         
         chain = prompt | self.llm
-        response = chain.invoke({})
+        response = chain.invoke({}) 
         return response.content
     
     def resolve_action(
