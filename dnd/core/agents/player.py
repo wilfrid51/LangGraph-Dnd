@@ -6,6 +6,7 @@ from dnd.core.langchain.core.prompts import ChatPromptTemplate
 from dnd.core.config import Config, Settings
 from dnd.core.models.state import GameState
 from dnd.core.models.characters import PlayerCharacter
+from dnd.core.memory import VaultManager
 
 class PlayerAgent:
     """Player agent that takes actions in the game with perspective filtering."""
@@ -14,9 +15,11 @@ class PlayerAgent:
         self,
         character: PlayerCharacter,
         llm: Optional[ChatOpenAI] = None,
+        memory_manager: Optional[VaultManager] = None
     ):
         self.character = character
         self.llm = llm or ChatOpenAI(model=Settings.PLAYER_MODEL, temperature=0.8)
+        self.memory_manager = memory_manager or VaultManager()
     
     def decide_action(self, game_state: GameState) -> str:
         """
@@ -78,4 +81,3 @@ Decide what action you want to take. Be creative and in-character. Respond with 
         parts.append("\nWhat action do you take?")
         
         return "\n".join(parts)
-

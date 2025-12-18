@@ -1,4 +1,3 @@
-from .config import Config
-from .config import Settings
+from .config import Config, Settings
 
 __all__ = ["Config", "Settings"]

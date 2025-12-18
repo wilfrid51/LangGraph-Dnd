@@ -11,6 +11,7 @@ from dnd.core.graph import create_game_graph
 from dnd.core.agents import Keeper
 from dnd.core.logging.logger import RealmRecorder, SessionRecorder
 from dnd.core.models.state import GameState
+from dnd.core.memory import VaultManager
 
 class GameEngine:
     """Main game engine the DnD simulation."""
@@ -25,7 +26,8 @@ class GameEngine:
         self.gm_llm = gm_llm or ChatOpenAI(model=Settings.GM_MODEL, temperature=0.7)
         self.player_llm = player_llm or ChatOpenAI(model=Settings.PLAYER_MODEL, temperature=0.8)
         
-        self.gm = Keeper(llm=self.gm_llm)
+        self.memory_manager = VaultManager()
+        self.gm = Keeper(llm=self.gm_llm, memory_manager=self.memory_manager)
         self.logger = RealmRecorder(self.session_id)
         self.session_logger = SessionRecorder(self.session_id)
         self.storage = SessionStorage()
@@ -54,6 +56,7 @@ class GameEngine:
             self.players[char.name] = PlayerAgent(
                 character=char,
                 llm=self.player_llm,
+                memory_manager=self.memory_manager
             )
         
         # Add NPCs
@@ -109,6 +112,9 @@ class GameEngine:
         # Update graph state
         self.graph_state = result
         
+        # Consolidate memory if needed
+        self.memory_manager.consolidate_if_needed(self.game_state)
+        
         # Save session
         self.save_session()
         
@@ -151,6 +157,7 @@ class GameEngine:
                 self.players[char_name] = PlayerAgent(
                     character=char_data,
                     llm=self.player_llm,
+                    memory_manager=self.memory_manager
                 )
 
         # Recreate graph
