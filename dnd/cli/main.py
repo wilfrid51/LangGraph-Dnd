@@ -219,5 +219,34 @@ def status(
             console.print(f"  {key}: {value}")
 
 
+#####################################
+# Launch the Streamlit web GUI
+#####################################
+@app.command()
+def gui():
+    """Launch the Streamlit web GUI."""
+    import subprocess
+    import sys
+    from pathlib import Path
+    
+    app_path = Path(__file__).parent.parent / "gui" / "streamlit_app.py"
+    
+    if not app_path.exists():
+        console.print(f"[red]GUI file not found: {app_path}[/red]")
+        raise typer.Exit(1)
+    
+    console.print("[green]Launching Streamlit GUI...[/green]")
+    console.print("[blue]The GUI will open in your default web browser.[/blue]")
+    
+    try:
+        subprocess.run([
+            sys.executable, "-m", "streamlit", "run", str(app_path)
+        ], check=True)
+    except subprocess.CalledProcessError as e:
+        console.print(f"[red]Error launching GUI: {e}[/red]")
+        raise typer.Exit(1)
+    except KeyboardInterrupt:
+        console.print("\n[blue]GUI closed.[/blue]")
+
 if __name__ == "__main__":
     app()
