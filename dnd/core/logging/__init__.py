@@ -1,4 +1,4 @@
-from .logger import GameLogger
+from .logger import RealmRecorder, SessionRecorder
 from .storage import SessionStorage
 
-__all__ = ["GameLogger", "SessionStorage"]
+__all__ = ["RealmRecorder", "SessionRecorder", "SessionStorage"]
