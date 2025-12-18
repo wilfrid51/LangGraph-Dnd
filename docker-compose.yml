@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  dnd-simulation:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: dnd-simulation
+    ports:
+      - "8501:8501"
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - GM_MODEL=${GM_MODEL:-gpt-4o-mini}
+      - PLAYER_MODEL=${PLAYER_MODEL:-gpt-4o-mini}
+      - MAX_CONTEXT_TURNS=${MAX_CONTEXT_TURNS:-10}
+      - MEMORY_CONSOLIDATION_THRESHOLD=${MEMORY_CONSOLIDATION_THRESHOLD:-20}
+      - LANGCHAIN_TRACING_V2=${LANGCHAIN_TRACING_V2:-false}
+      - LANGCHAIN_API_KEY=${LANGCHAIN_API_KEY:-}
+      - LANGCHAIN_PROJECT=${LANGCHAIN_PROJECT:-dd-simulation}
+    volumes:
+      - ./logs:/app/logs
+      - ./sessions.db:/app/sessions.db
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8501/_stcore/health')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 5s
+

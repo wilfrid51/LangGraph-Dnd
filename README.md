@@ -104,6 +104,34 @@ python3 main.py gui
 python3 main.py cli
 ```
 
+### Docker Deployment
+
+**Using Docker Compose (Recommended):**
+```bash
+# Set your OpenAI API key
+export OPENAI_API_KEY=your_key_here
+
+# Build and run
+docker-compose up -d
+
+# Access at http://localhost:8501
+```
+
+**Using Docker directly:**
+```bash
+# Build image
+docker build -t dnd-simulation .
+
+# Run container
+docker run -d \
+  -p 8501:8501 \
+  -e OPENAI_API_KEY=your_key_here \
+  -v $(pwd)/logs:/app/logs \
+  -v $(pwd)/sessions.db:/app/sessions.db \
+  --name dnd-simulation \
+  dnd-simulation
+```
+
 ## Usage Examples
 
 ### Creating a New Game
